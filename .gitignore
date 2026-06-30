@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# 임시/캐시
+*.tmp
+*~
+.cache/
+
+# 민감 정보
+.env
+*.key
+secrets/
