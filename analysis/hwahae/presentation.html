@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>화해 프로덕트 분석 — 정보가 아니라 '중립성'을 판다</title>
+<style>
+  :root{
+    --bg:#F6F5F2; --ink:#15191C; --muted:#5C6770; --line:#E1DED7;
+    --card:#FFFFFF; --teal:#0E8C7F; --teal-d:#0a6b61; --warn:#E1604C; --gold:#C99A2E;
+    --shadow:0 6px 24px rgba(20,30,40,.08);
+    --font:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard','Malgun Gothic','맑은 고딕',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--font);background:#1b1f22;color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .deck{position:relative;height:100vh;width:100vw;overflow:hidden}
+  .slide{position:absolute;inset:0;display:none;padding:6vh 7vw;background:var(--bg);
+    flex-direction:column;justify-content:center;opacity:0;transition:opacity .4s ease}
+  .slide.active{display:flex;opacity:1;z-index:1}
+  .slide.cover{background:linear-gradient(150deg,#0E8C7F 0%,#0a6b61 55%,#0c4f49 100%);color:#fff}
+  .kicker{font-size:1.05rem;font-weight:700;letter-spacing:.06em;color:var(--teal);text-transform:uppercase;margin-bottom:1.1rem}
+  .cover .kicker{color:#9af0e2}
+  h1{font-size:3.5rem;line-height:1.12;font-weight:800;letter-spacing:-.02em}
+  h2{font-size:2.5rem;line-height:1.15;font-weight:800;letter-spacing:-.01em;margin-bottom:1.6rem}
+  h2 .ac{color:var(--teal)}
+  .lead{font-size:1.5rem;line-height:1.5;color:var(--muted);font-weight:500}
+  .cover .lead{color:#d6f5ef}
+  p{font-size:1.35rem;line-height:1.6}
+  strong{color:var(--teal-d)}
+  .big{font-size:2.1rem;line-height:1.45;font-weight:700}
+  .muted{color:var(--muted)}
+  .warn{color:var(--warn)}
+  ul{margin:.4rem 0 0 0;padding:0;list-style:none}
+  li{font-size:1.3rem;line-height:1.5;margin:.7rem 0;padding-left:1.7rem;position:relative}
+  li:before{content:"";position:absolute;left:0;top:.62em;width:.6rem;height:.6rem;border-radius:50%;background:var(--teal)}
+  .row{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.4rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem 1.6rem;box-shadow:var(--shadow);flex:1;min-width:200px}
+  .card h3{font-size:1.15rem;color:var(--teal-d);margin-bottom:.5rem;font-weight:800}
+  .card p{font-size:1.12rem;line-height:1.45;color:var(--ink)}
+  .stat{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.6rem}
+  .stat .s{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.4rem;box-shadow:var(--shadow);min-width:150px}
+  .stat .n{font-size:2.2rem;font-weight:800;color:var(--teal-d);line-height:1}
+  .stat .l{font-size:.98rem;color:var(--muted);margin-top:.45rem}
+  table{border-collapse:collapse;width:100%;margin-top:.6rem;font-size:1.18rem;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--line)}
+  th{background:#eef4f3;color:var(--teal-d);font-weight:800;font-size:1.02rem}
+  tr:last-child td{border-bottom:none}
+  .flow{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+  .node{background:var(--card);border:2px solid var(--teal);color:var(--teal-d);border-radius:12px;padding:.8rem 1.1rem;font-weight:700;font-size:1.12rem;box-shadow:var(--shadow)}
+  .node.dark{background:var(--teal);color:#fff}
+  .node.warnn{border-color:var(--warn);color:var(--warn)}
+  .arrow{font-size:1.6rem;color:var(--muted);font-weight:700}
+  .arrow.bad{color:var(--warn)}
+  .quote{border-left:5px solid var(--teal);padding:.4rem 0 .4rem 1.4rem;font-size:1.7rem;line-height:1.45;font-weight:600;font-style:italic;color:var(--ink)}
+  .quote.warn{border-color:var(--warn)}
+  .tag{display:inline-block;background:#eef4f3;color:var(--teal-d);border-radius:999px;padding:.3rem .9rem;font-size:1rem;font-weight:700;margin:.2rem .3rem .2rem 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:start}
+  .pill{font-size:1.55rem;font-weight:800}
+  .ic{font-size:1.6rem;margin-right:.4rem}
+  /* nav */
+  .bar{position:fixed;bottom:0;left:0;height:5px;background:var(--teal);z-index:40;transition:width .35s ease}
+  .hud{position:fixed;bottom:14px;right:20px;z-index:40;font-size:.95rem;color:#cdd3d6;background:rgba(20,25,28,.55);padding:.3rem .7rem;border-radius:999px;font-weight:600}
+  .hint{position:fixed;bottom:14px;left:20px;z-index:40;font-size:.9rem;color:#aeb6ba}
+  .dots{position:fixed;top:50%;right:16px;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:9px}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;border:none;padding:0}
+  .dot.on{background:var(--teal);transform:scale(1.3)}
+  .src{font-size:.95rem;color:var(--muted);margin-top:1.3rem}
+  @media (max-width:760px){h1{font-size:2.2rem}h2{font-size:1.6rem}.lead{font-size:1.15rem}p,li{font-size:1.05rem}.two{grid-template-columns:1fr}.big{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 COVER -->
+  <section class="slide cover active">
+    <div class="kicker">AI 심화 PM 부트캠프 · Week 1 프로덕트 분석</div>
+    <h1>화해는 정보가 아니라<br>‘중립성’을 판다</h1>
+    <p class="lead" style="margin-top:1.6rem">대한민국 1등 뷰티 앱 화해(Hwahae)의 제품 가치를<br>표면에서 구조까지 분해한 분석</p>
+    <p style="margin-top:2.4rem;color:#bdeee5;font-size:1.05rem">← → 또는 스페이스바로 이동</p>
+  </section>
+
+  <!-- 2 SNAPSHOT -->
+  <section class="slide">
+    <div class="kicker">분석 대상</div>
+    <h2>화해 한눈에</h2>
+    <p class="muted" style="margin-bottom:.4rem">화장품 성분·리뷰 기반 뷰티 앱 · 운영사 화해글로벌(前 버드뷰)</p>
+    <div class="stat">
+      <div class="s"><div class="n">38만</div><div class="l">제품 성분 DB</div></div>
+      <div class="s"><div class="n">980만</div><div class="l">실사용 리뷰</div></div>
+      <div class="s"><div class="n">200만</div><div class="l">통합 MAU</div></div>
+      <div class="s"><div class="n">4.68</div><div class="l">앱스토어 평점(3.2만)</div></div>
+    </div>
+    <p style="margin-top:1.6rem">‘성분을 해석한다’는 정체성으로 출발해 <strong>광고 없는 진짜 리뷰</strong>로 신뢰를 쌓아온 1세대 뷰티 정보 플랫폼.</p>
+  </section>
+
+  <!-- 3 PARADOX -->
+  <section class="slide">
+    <div class="kicker">출발점이 된 역설</div>
+    <h2>매출은 역대 최대인데, <span class="warn">적자는 깊어진다</span></h2>
+    <div class="row">
+      <div class="card"><h3>표면</h3><p>2024 매출 824억(+60%) — 창사 이래 최대</p></div>
+      <div class="card"><h3>그런데</h3><p>수익원이던 PB(비플레인)를 <strong>812억에 매각</strong>(2025.12)</p></div>
+      <div class="card"><h3>드러난 민낯</h3><p class="warn">본업 매출 214억(−25.5%)<br>영업손실 −95억</p></div>
+    </div>
+    <p style="margin-top:1.6rem" class="big">“성장하는 매출, 지속되는 적자.” <span class="muted" style="font-weight:500;font-size:1.3rem">— 왜?</span></p>
+  </section>
+
+  <!-- 4 METHOD -->
+  <section class="slide">
+    <div class="kicker">분석 방법</div>
+    <h2>현상 나열을 멈추고 <span class="ac">구조</span>로 내려간다</h2>
+    <div class="flow">
+      <span class="node">① 주장 vs 체감 분리</span><span class="arrow">→</span>
+      <span class="node">② 개념 분해</span><span class="arrow">→</span>
+      <span class="node dark">③ 역발상</span>
+    </div>
+    <div class="flow">
+      <span class="node">④ 자산 재정의</span><span class="arrow">→</span>
+      <span class="node">⑤ 기회 탐색(CVC·디커플링)</span><span class="arrow">→</span>
+      <span class="node">⑥ 회의적 검증</span>
+    </div>
+    <p style="margin-top:1.7rem"><strong>핵심 질문은 ‘무엇이 일어나는가’가 아니라 ‘왜 그렇게 작동하는가’.</strong> 이 발표는 ③ 역발상에서 클라이맥스를 찍는다.</p>
+  </section>
+
+  <!-- 5 FLIP -->
+  <section class="slide">
+    <div class="kicker">③ 역발상</div>
+    <h2>“성분 정보가 <span class="warn">많아서</span> 신뢰받는다”가 맞나?</h2>
+    <div class="two">
+      <div>
+        <p class="big">반례</p>
+        <p style="margin-top:.5rem">올리브영은 리뷰 <strong>4,700만 건</strong> + AI 요약으로 <strong>정보량이 더 많다.</strong></p>
+        <p style="margin-top:1rem">정보량이 해자라면 — <span class="warn">올영이 이미 이겼어야 한다.</span></p>
+      </div>
+      <div>
+        <p class="big">그런데</p>
+        <p style="margin-top:.5rem">유저는 여전히 말한다.</p>
+        <p class="quote" style="margin-top:.8rem">“성분은 화해에서 본다.”</p>
+        <p style="margin-top:1rem" class="muted">→ 그렇다면 신뢰의 진짜 원천은 무엇인가?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 CORE INSIGHT -->
+  <section class="slide cover" style="background:linear-gradient(150deg,#0E8C7F,#0a6b61)">
+    <div class="kicker">핵심 통찰</div>
+    <h1>진짜 자산은 ‘성분 DB’가 아니다.<br>‘<span style="color:#ffe28a">중립성</span>’이다.</h1>
+    <p class="lead" style="margin-top:1.8rem">화해는 그 제품을 <strong style="color:#fff">팔지 않으니까</strong> 성분 평가에 사심이 없다.<br>
+    올영·쿠팡·브랜드몰의 추천은 ‘파는 자의 정보’라 구조적으로 의심받는다.</p>
+    <p style="margin-top:2rem;font-size:1.45rem;color:#bdeee5">신뢰의 원천 = 정보의 <em>양</em>이 아니라 <strong style="color:#ffe28a">이해관계의 부재(disinterestedness)</strong></p>
+  </section>
+
+  <!-- 7 KARROT PARALLEL -->
+  <section class="slide">
+    <div class="kicker">구조는 반복된다</div>
+    <h2>당근과 똑같은 <span class="ac">구조</span></h2>
+    <table>
+      <tr><th></th><th>표면 스토리(감성)</th><th>진짜 메커니즘(구조)</th></tr>
+      <tr><td><strong>당근</strong></td><td>“동네의 따뜻한 연결”</td><td>도망 못 감 = <strong>억제</strong></td></tr>
+      <tr><td><strong>화해</strong></td><td>“성분 정보가 풍부”</td><td>안 파니까 사심 없음 = <strong>중립성</strong></td></tr>
+    </table>
+    <p style="margin-top:1.5rem">두 회사 모두 신뢰의 진짜 원천은 <strong>감성이 아니라 구조</strong>다. 감성 서사 뒤의 구조를 봐야 본질이 보인다.</p>
+  </section>
+
+  <!-- 8 SELF-CANNIBALIZATION -->
+  <section class="slide">
+    <div class="kicker">위기</div>
+    <h2 class="warn">핵심 자산을 스스로 태우고 있다</h2>
+    <div class="flow">
+      <span class="node">중립성<br><span style="font-weight:500;font-size:.9rem">안 판다</span></span>
+      <span class="arrow">→</span>
+      <span class="node">신뢰</span>
+      <span class="arrow">→</span>
+      <span class="node dark">유저 가치</span>
+      <span class="arrow bad">⟵ 침식</span>
+      <span class="node warnn">커머스·PB<br><span style="font-weight:500;font-size:.9rem">‘파는 자’가 됨</span></span>
+    </div>
+    <p style="margin-top:1.6rem">적자 탈출을 위해 민 커머스가, 신뢰의 원천인 <strong>중립성을 무너뜨린다.</strong></p>
+    <p class="quote warn" style="margin-top:1.1rem">“어플이 그냥 홈쇼핑이 되어버렸다.” <span class="muted" style="font-style:normal;font-size:1.1rem;font-weight:500">— 실제 앱 리뷰</span></p>
+    <p class="muted" style="margin-top:.8rem;font-size:1.15rem">= 미관 불만이 아니라 <strong>신뢰 메커니즘의 구조적 붕괴 신호.</strong> (당근의 ‘수익화가 억제를 침식’과 동일 패턴)</p>
+  </section>
+
+  <!-- 9 CLAIMED VS FELT -->
+  <section class="slide">
+    <div class="kicker">주장가치 vs 체감가치</div>
+    <h2>두 가치의 <span class="ac">괴리</span></h2>
+    <table>
+      <tr><th>화해가 주장</th><th>유저가 체감</th></tr>
+      <tr><td>1등 뷰티 <strong>커머스</strong> 플랫폼</td><td>성분 <strong>팩트체크 도구</strong></td></tr>
+      <tr><td>좋은 제품을 <strong>팔아줌</strong></td><td>확인은 화해, <strong>구매는 올영·쿠팡</strong>(쇼루밍)</td></tr>
+      <tr><td>다양한 혜택·할인</td><td class="warn">“홈쇼핑이 됐다”(배신감)</td></tr>
+    </table>
+    <p style="margin-top:1.4rem">화해가 푼 건 <strong>‘정보 신뢰’ 한 단계</strong>뿐. ‘거래’는 빼앗겼고, ‘할인 푸시’는 중립성을 깎는다.</p>
+  </section>
+
+  <!-- 10 STRATEGY -->
+  <section class="slide">
+    <div class="kicker">전략 — 모든 선택을 ‘중립성’으로 거른다</div>
+    <h2>지킨다 · 가둔다 · 판다 · 버린다</h2>
+    <div class="row">
+      <div class="card"><h3>🛡️ 지킨다</h3><p>중립적 검증 포지션<br><span class="muted">첫 화면=성분, 커머스 분리</span></p></div>
+      <div class="card"><h3>🔒 가둔다</h3><p>‘거래’가 아니라 <strong>‘결정’</strong>을<br><span class="muted">개인 스킨 프로파일 × AI 성분매칭</span></p></div>
+    </div>
+    <div class="row" style="margin-top:1.2rem">
+      <div class="card"><h3>💰 판다</h3><p><strong>‘파는 자는 못 하는 것’</strong>만<br><span class="muted">인증·규제(e-라벨)·데이터 B2B, 글로벌 큐레이션</span></p></div>
+      <div class="card"><h3>🗑️ 버린다</h3><p>직접 커머스 가격경쟁<br><span class="muted">올영·쿠팡과 할인 싸움 = 자기잠식+패배</span></p></div>
+    </div>
+  </section>
+
+  <!-- 11 DECISION FILTER -->
+  <section class="slide cover" style="background:linear-gradient(150deg,#11313a,#0c4f49)">
+    <div class="kicker" style="color:#9af0e2">한 장으로 들고 다닐 렌즈</div>
+    <h1 style="font-size:2.8rem">화해의 모든 의사결정은<br>단 하나의 질문으로 판단된다</h1>
+    <p class="quote" style="border-color:#ffe28a;color:#fff;font-size:2rem;margin-top:1.8rem">“이것이 우리의 중립성을<br>강화하는가, 침식하는가?”</p>
+    <p style="margin-top:1.6rem;color:#bdeee5;font-size:1.2rem">방어 해자 — 올영은 구조상 ‘파는 자’라, <strong style="color:#fff">중립성에선 화해를 못 이긴다.</strong> 여기가 지킬 유일한 땅.</p>
+  </section>
+
+  <!-- 12 TAKEAWAY -->
+  <section class="slide">
+    <div class="kicker">정리</div>
+    <h2>PM으로서 가져갈 것</h2>
+    <ul>
+      <li><strong>주장가치와 체감가치를 분리</strong>하라 — 그 Gap이 분석의 광맥.</li>
+      <li><strong>감성 서사 뒤의 구조</strong>를 보라 — 당근=억제, 화해=중립성.</li>
+      <li><strong>자기잠식</strong>을 의심하라 — 수익화가 핵심 자산을 태우고 있지 않은가?</li>
+      <li><strong>AI의 첫 답을 그대로 받지 마라</strong> — ‘역발상’으로 한 겹 더 내려가라.</li>
+    </ul>
+    <p class="src">전체 분석 13단계 · 프레임워크 · 데이터 출처 →
+    <strong>github.com/h0n9670/company-analysis</strong> (analysis/hwahae)</p>
+    <p style="margin-top:1.4rem" class="big ac">“화해는 정보가 아니라, 중립성을 판다.”</p>
+  </section>
+
+</div>
+
+<div class="bar" id="bar"></div>
+<div class="hud"><span id="cur">1</span> / <span id="tot">12</span></div>
+<div class="hint">← → · Space · 점 클릭</div>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsWrap=document.getElementById('dots');
+  const bar=document.getElementById('bar');
+  const cur=document.getElementById('cur');
+  document.getElementById('tot').textContent=slides.length;
+  let i=0;
+  slides.forEach((_,n)=>{const b=document.createElement('button');b.className='dot';b.onclick=()=>go(n);dotsWrap.appendChild(b);});
+  const dots=[...document.querySelectorAll('.dot')];
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    cur.textContent=i+1;
+  }
+  function next(){go(i+1)} function prev(){go(i-1)}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home')go(0); else if(e.key==='End')go(slides.length-1);
+  });
+  document.getElementById('deck').addEventListener('click',e=>{
+    const x=e.clientX/window.innerWidth; if(x>0.5)next(); else prev();
+  });
+  let sx=null;
+  document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50){dx<0?next():prev();}sx=null;},{passive:true});
+  go(0);
+</script>
+</body>
+</html>
