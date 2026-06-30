@@ -12,6 +12,7 @@
 | 3 | 경쟁 분석 | competitive-analysis | [03-competitive-analysis.md](./03-competitive-analysis.md) |
 | 4 | 비즈니스 모델 | business-model | [04-business-model.md](./04-business-model.md) |
 | 5 | 사용자 세분화 | user-segmentation | [05-user-segmentation.md](./05-user-segmentation.md) |
+| 6 | 프레임워크 보완 | 차별화5유형·5Why·시스템사고 | [06-framework-deepdive.md](./06-framework-deepdive.md) |
 
 ## 한 장 요약 (Executive Synthesis)
 
