@@ -21,6 +21,7 @@
 | 10 | **개선 제안서** | 문제→개선안·우선순위·로드맵 | [10-improvement-proposal.md](./10-improvement-proposal.md) |
 | 11 | 성분 자산 활용 발상 | B2C·B2B·글로벌 아이디어 Top5 | [11-ingredient-asset-ideation.md](./11-ingredient-asset-ideation.md) |
 | 12 | **구조적 재해석** | 신뢰의 본질=중립성 (역발상) | [12-structural-reframe.md](./12-structural-reframe.md) |
+| 13 | **1-pager (중립성 중심)** | 발표용 — 중립성 단일 테제 | [13-onepager-neutrality.md](./13-onepager-neutrality.md) |
 
 > 🔴 **중요 정정 (07단계)**: 01~06은 "PB(비플레인) 매출 66% 의존"을 전제했으나, 화해글로벌은 **2025.12 PB 자회사를 812억에 전량 매각**(수령 661.7억)했다. PB 제거 후 드러난 플랫폼 본업은 **2025 매출 214.6억(−25.5%)·영업손실 95.4억**. 전략 방향(개인화·글로벌·데이터 화폐화)은 유효하나, 본업 흑자화가 **생존 과제**로 격상됨. 상세는 [07-data-findings.md](./07-data-findings.md) 참조.
 
