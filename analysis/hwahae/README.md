@@ -5,6 +5,8 @@
 
 ## 분석 문서
 
+> 📄 **[최종 종합 보고서 (1-pager)](./00-executive-summary.md)** — 먼저 읽으세요.
+
 | # | 단계 | 스킬 | 문서 |
 |---|---|---|---|
 | 1 | 시장 스캔 | market-scan | [01-market-scan.md](./01-market-scan.md) |
