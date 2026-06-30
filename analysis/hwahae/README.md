@@ -18,6 +18,7 @@
 | 7 | 데이터 실체 확인 | 재무·행동·신규전략 | [07-data-findings.md](./07-data-findings.md) |
 | 8 | 앱 리뷰 분석 | App Store 평점·감성·테마 | [08-review-analysis.md](./08-review-analysis.md) |
 | 9 | 직접 사용 UX 평가 | 온보딩·정체성·시각 (1차) | [09-ux-firsthand.md](./09-ux-firsthand.md) |
+| 10 | **개선 제안서** | 문제→개선안·우선순위·로드맵 | [10-improvement-proposal.md](./10-improvement-proposal.md) |
 
 > 🔴 **중요 정정 (07단계)**: 01~06은 "PB(비플레인) 매출 66% 의존"을 전제했으나, 화해글로벌은 **2025.12 PB 자회사를 812억에 전량 매각**(수령 661.7억)했다. PB 제거 후 드러난 플랫폼 본업은 **2025 매출 214.6억(−25.5%)·영업손실 95.4억**. 전략 방향(개인화·글로벌·데이터 화폐화)은 유효하나, 본업 흑자화가 **생존 과제**로 격상됨. 상세는 [07-data-findings.md](./07-data-findings.md) 참조.
 
